@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    {
+      "name": "Обработка исходной ссылки",
+      "file": "import/LinkFinder.php",
+      "enabled": true
+    }
+  ]
+}

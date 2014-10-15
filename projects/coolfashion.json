@@ -1,0 +1,7 @@
+{
+  "name": "Cool fashion",
+  "uri": "coolfashion.ru",
+  "mongo": {
+    "dbname": "coolfashion"
+  }
+}

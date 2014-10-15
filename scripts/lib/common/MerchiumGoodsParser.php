@@ -1,14 +1,13 @@
 <?php
 
-
-
-class MerchiumGoodParser implements Iterator, Countable {
+class MerchiumGoodsParser implements Iterator, Countable {
   
-  private $position = 0, $fileName, $header = array(), $data = array(), $plugins = array();
+  private $position = 0, $fileName, $header = array(), $data = array(), $plugins = array(), $config;
   const DELIMITER = ';';
   
-  public function __construct($fileName) {
+  public function __construct($fileName, $config) {
     if(!file_exists($fileName)) throw new Exception("File $fileName not exists!");
+    $this->config = $config;
     $this->fileName = $fileName;
     $this->sliceData();
   }
@@ -24,13 +23,24 @@ class MerchiumGoodParser implements Iterator, Countable {
   public function valid() { return isset($this->data[$this->position]); }
   
   public function current() { 
-    $ret = $this->header;
+    $goodData = $this->header;
     $data = $this->data[$this->position];
-    foreach($ret as $keyName => $keyId) {
-      $ret[$keyName] = $data[$keyId];
+    foreach($goodData as $keyName => $keyId) {
+      $goodData[$keyName] = $data[$keyId];
     }
-    foreach($this->plugins as $plugin) {
-      $ret = call_user_func($plugin, $ret);
+    $merchiumGoods = new MerchiumGoods($this->config);
+    $merchiumGoods->setData($goodData)->prepareData($this->plugins);
+    return $merchiumGoods;
+  }
+
+  public function addPlugin(closure $plugin) {
+    $this->plugins[] = $plugin;
+  }
+  
+  public function __toString() {
+    $ret = '';
+    foreach($this as $good) {
+      $ret .= "{$good['Product id']} >> {$good['Product name']} [{$good['Price']}]".PHP_EOL;
     }
     return $ret;
   }
@@ -58,23 +68,6 @@ class MerchiumGoodParser implements Iterator, Countable {
     $this->getData($rawData);
   }
   
-  public function addPlugin(closure $plugin) {
-    $this->plugins[] = $plugin;
-  }
+
   
-}
-
-$linkFinder = function($data){
-  $ret = $data;
-  preg_match('~T\[(.*)\]~ui', $data['Features'], $mathes);
-  $ret['Origin goods url'] = $mathes[1];
-  return $ret;
-};
-
-$merchiumGoodParser = new MerchiumGoodParser('data/products_general_10072014.csv');
-$merchiumGoodParser->addPlugin($linkFinder);
-
-if(count($merchiumGoodParser) > 0) foreach ($merchiumGoodParser as $id => $good) {
-  echo $id.PHP_EOL;
-  echo var_dump($good);
 }
