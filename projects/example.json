@@ -1,0 +1,12 @@
+{
+  "name": "Project name",
+  "uri": "project.uri.com",
+  "mongo": {
+    "dbname": "mongo_db_name"
+  },
+  "price": {
+    "closure": "$closure = function($price) { return $price * 1.5; };",
+    "round": true,
+    "sweet": true
+  }
+}

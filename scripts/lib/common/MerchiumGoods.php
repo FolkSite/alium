@@ -11,8 +11,11 @@
 
 class MerchiumGoods {
   
+  private $config, $priceCalculator;
   public function __construct(stdClass $config) {
     $this->config = $config;
+    PFactory::load('PriceCalculator');
+    $this->priceCalculator = new PriceCalculator($this->config);
   }
   
   private $goods;
@@ -35,20 +38,27 @@ class MerchiumGoods {
   
   public function save() {
     $mongo = new MongoClient();
-    $dbmongo = $mongo->{$this->config->dbname};
-    $dbmongo->merchium->update(array('id' => $this->goods->data['Product id']), array('$set' => $this->goods), array('upsert'=>true));
+    $collection = $mongo->{$this->config->mongo->db}->{$this->config->mongo->collection};
+    $collection->update(array('id' => $this->goods->data['Product id']), array('$set' => $this->goods), array('upsert'=>true));
   }
 
-  public function updatePrice($newPrice) {
-    $this->goods->{'Merchium price history'}[] = $this->goods->data['Price'];
-    $this->goods->{'Origin price history'}[] = $newPrice;
-    $this->goods->data['Price'] = $this->calcMarginPrice($newPrice);
+  public function updatePrice($newOriginPrice) {
+    $newMerchiumPrice = $this->priceCalculator->calcMarginPrice($newOriginPrice); // !!!
+    $this->historyOriginPrice($newOriginPrice);
+    $this->historyMerchiumPrice($newMerchiumPrice);
+    $this->goods->data['Price'] = $newMerchiumPrice;
+  }
+
+  private function historyOriginPrice($newOriginPrice) {
+    $oldOriginPrice = isset($this->goods->{'Origin price history'}) ? end($this->goods->{'Origin price history'}) : false;
+    if ($oldOriginPrice === false || $oldOriginPrice != $newOriginPrice) $this->goods->{'Origin price history'}[] = $newOriginPrice;
+  }
+
+  private function historyMerchiumPrice($newMerchiumPrice) {
+    $oldMerchiumPrice = isset($this->goods->{'Merchium price history'}) ? end($this->goods->{'Merchium price history'}) : false;
+    if ($oldMerchiumPrice === false || $oldMerchiumPrice != $newMerchiumPrice) $this->goods->{'Merchium price history'}[] = $newMerchiumPrice;
   }
   
-  public function calcMarginPrice($originPrice) {
-   return $originPrice * 1.3;
-  }
-
   public function getData() {
     return $this->goods->data;
   }

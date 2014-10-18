@@ -2,6 +2,12 @@
   "name": "Cool fashion",
   "uri": "coolfashion.ru",
   "mongo": {
-    "dbname": "coolfashion"
+    "db": "alium",
+    "collection": "coolfashion"
+  },
+  "price": {
+    "closure": "$closure = function($price) { return $price * 1.21; };",
+    "round": true,
+    "sweet": true
   }
 }

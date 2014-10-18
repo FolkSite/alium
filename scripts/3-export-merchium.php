@@ -8,6 +8,7 @@ class GoodsExporter extends Cli {
   const MANUAL = 'Use {app} project.json';
 
   public function __construct() {
+    PFactory::load('AliGoodsParser');
     PFactory::load('MerchiumGoods');
   }
 
@@ -24,16 +25,16 @@ class GoodsExporter extends Cli {
   public function export() {
     
     $mongo = new MongoClient();
-    $dbmongo = $mongo->{$this->config->mongo->dbname};
+    $collection = $mongo->{$this->config->mongo->db}->{$this->config->mongo->collection};
     
-    $cursor = $dbmongo->merchium->find();
+    $cursor = $collection->find();
 
     $outputBuffer = fopen("php://output", 'w');
 
     $putHeader = true;
     foreach ($cursor as $doc) {
       
-      $merchiumGoods = new MerchiumGoods($this->config->mongo);
+      $merchiumGoods = new MerchiumGoods($this->config);
       $merchiumGoods->loadGood((object)$doc);
 
       if($putHeader) {
