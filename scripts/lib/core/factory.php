@@ -37,6 +37,7 @@ abstract class PFactory {
   {
     self::$dir = dirname(__FILE__).'/../';
     require_once(self::$dir.'../../etc/config.php');
+    require_once(self::$dir.'core/plugin.php');
     require_once(self::$dir.'core/mysql.php');
     require_once(self::$dir.'core/cli.php');
     require_once(self::$dir.'core/parser.php');

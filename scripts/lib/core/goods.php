@@ -9,11 +9,36 @@
  */
 
 abstract class Goods {
+  use Plugin;
   
   protected $goods, $config;
   public function __construct() {
     $this->config = PApplication::getConfig();
   }
+
+  public function __get($name) {
+    $isPropertyPresent = isset($this->goods->data[$name]);
+    if ($isPropertyPresent) return $this->goods->data[$name];
+    return null;
+  }
+
+  public function __set($name, $value) {
+    $isPropertyPresent = isset($this->goods->data[$name]);
+    $this->goods->data[$name] = $value;
+  }
+
+  public function __toString() {
+    $ret = '';
+    foreach($this->goods->data as $key => $_val) {
+      $val = is_array($_val) ? implode(', ', $_val) : $_val;
+      $ret .= $key.': '.$val.PHP_EOL;
+    }
+    return $ret;
+  }
+
+  /**
+   *  Сохранение может быть переопределено в дочерних классах!
+   */
 
   public function save() {
     $mongo = new MongoClient();
@@ -28,10 +53,33 @@ abstract class Goods {
     $this->goods->data['Price'] = $newMerchiumPrice;
   }
 
+  private static $fields = array(
+    'Product code', 'Language', 'Product id', 'Category', 'List price', 'Price', 'Status', 'Quantity', 'Weight', 
+    'Min quantity', 'Max quantity', 'Quantity step', 'List qty count', 'Shipping freight', 'Date added', 'Downloadable', 
+    'Files', 'Ship downloadable', 'Inventory tracking', 'Out of stock actions', 'Free shipping', 'Feature comparison', 
+    'Zero price action', 'Thumbnail', 'Detailed image', 'Product name', 'Description', 'Short description', 'Meta keywords', 
+    'Meta description', 'Search words', 'Page title', 'Taxes', 'Features', 'Options', 'Secondary categories', 'Product URL', 
+    'Image URL', 'Detailed image URL', 'Items in box', 'Box size', 'Store', 'SEO name', 
+    'YM Brand', 'YM Country of origin', 'YM Allow retail store purchase', 'YM Allow booking and self delivery', 
+    'YM Allow delivery', 'YM Allow local delivery cost', 'YM Export Yes', 'YM Basic bid', 'YM Card bid', 'YM Model', 
+    'YM Sales notes', 'YM typePrefix', 'YM Market category', 
+    'TM Brand', 'TM Model', 'TM typePrefix', 'TM Allow local delivery cost', 'TM Allow delivery', 
+    'TM Allow booking and self delivery', 'TM MCP', 'TM Export Yes', 'YM Manufacturer warranty', 'YM Seller warranty'
+  );
+
+  public function getHeader() {
+    return self::$fields;
+  }
+
+  public function getData() {
+    $ret = array();
+    foreach(self::$fields as $field) $ret[$field] = isset($this->goods->data[$field]) ? $this->goods->data[$field] : '';
+    return $ret;
+  }
+
   protected function prepareCommonFields() {
     $this->goods->id = $this->goods->data['Product id'];
-    // $this->goods->{'Shop price'} = $this->goods->data['Price'];
-    // $this->goods->{'Shop status'} = $this->goods->data['Status'];
+    $this->goods->src = 'Ali';
   }
 
   private $priceCalculator;

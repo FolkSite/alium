@@ -23,7 +23,7 @@ class CSVGoods extends Parser implements Iterator, Countable {
     PFactory::load('GoodsFromArray');
     $this->fileName = $fileName;
     $this->sliceData();
-    $this->loadPlugins(PFactory::getDir().'plugins/fill.json');
+    $this->loadPluginsFromFile(PFactory::getDir().'plugins/fill.json', 'plugins');
   }
 
   /**

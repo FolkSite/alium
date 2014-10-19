@@ -43,7 +43,7 @@ class AliGoodsParser {
   }
 
   private function parseName() {
-    if (preg_match('~itemprop="name">(.*)<\/~Ui', $this->data, $matches)) {
+    if (preg_match('~itemprop="name">(.*)<\/~Usi', $this->data, $matches)) {
       return $matches[1];
     } else {
       throw new Exception("Can not parse name");
@@ -51,23 +51,15 @@ class AliGoodsParser {
   }
 
   private function parseImages() {
-    if (preg_match('~window\.runParams\.imageBigViewURL=\[.*~Ui', $this->data, $matches)) {
-      //if (preg_match('~window\.runParams\.imageBigViewURL=(\[.*\]);~Ui', $this->data, $matches)) {
-      
-      die(var_dump($matches));
+    if (preg_match('~window\.runParams\.imageBigViewURL=(\[.*\]);~Usi', $this->data, $matches)) {
       $data = json_decode($matches[1]);
-      
-      $item = $data[0]; // TODO other items
-      // Цена при акции, может не быть
-      return (isset($item->skuVal->actSkuMultiCurrencyCalPrice)) ? $item->skuVal->actSkuMultiCurrencyCalPrice : null;
+      return $data;
     }
-
-    die('fail'.PHP_EOL);
-
+    return array();
   }
 
-  private function parseActionPrice(){
-    if (preg_match('~var skuProducts=(\[\{.*\}\]);~Ui', $this->data, $matches)) {
+  private function parseActionPrice() {
+    if (preg_match('~var skuProducts=(\[\{.*\}\]);~Usi', $this->data, $matches)) {
       $data = json_decode($matches[1]);
       $item = $data[0]; // TODO other items
       // Цена при акции, может не быть
@@ -77,7 +69,7 @@ class AliGoodsParser {
   }
   
   private function parsePrice() {
-    if (preg_match('~var skuProducts=(\[\{.*\}\]);~Ui', $this->data, $matches)) {
+    if (preg_match('~var skuProducts=(\[\{.*\}\]);~Usi', $this->data, $matches)) {
       $data = json_decode($matches[1]);
       $item = $data[0]; // TODO other items
       // Цена товара

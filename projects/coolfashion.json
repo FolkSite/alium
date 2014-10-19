@@ -9,5 +9,16 @@
     "closure": "$closure = function($price) { return $price * 1.21; };",
     "round": true,
     "sweet": true
+  },
+  "shopPolicy": {
+    "plugins": {
+      "before_save": [
+        {
+          "name": "Минимальный набор для функционирования Мерчиума",
+          "file": "add/common.php",
+          "enabled": true
+        }
+      ]
+    }
   }
 }

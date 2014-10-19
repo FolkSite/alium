@@ -17,12 +17,4 @@ class GoodsFromMongo extends Goods {
       unset($this->goods->_id);
   }
 
-  public function getHeader() {
-    return array_keys($this->goods->data);
-  }
-
-  public function getData() {
-    return $this->goods->data;
-  }
-
 }

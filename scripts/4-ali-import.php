@@ -17,13 +17,13 @@ class AliImporter extends Cli {
 
   public function __construct() {
     PFactory::load('AliGoodsParser');
-    PFactory::load('MerchiumGoods');
+    PFactory::load('GoodsFromShop');
     require_once(PFactory::getDir().'extend/simple_html_dom/simple_html_dom.php');
   }
 
   public function run() {
     global $argv, $argc;
-    if ($argc < 2) die($this->showMan());
+    if ($argc < 3) die($this->showMan());
 
     $configFile = $argv[1];
     
@@ -35,22 +35,39 @@ class AliImporter extends Cli {
   }
 
   private function import($uri) {
-    $this->isPrecent($uri) and die("Uri already present: $uri".PHP_EOL);
+
+    $this->isPresent($uri) and die("Uri already present: $uri".PHP_EOL);
+
+    $goods = new GoodsFromShop();
 
     $aliGoodsParser = new AliGoodsParser();
     $aliGoodsParser->getContent($uri);
 
-    echo $aliGoodsParser->images.PHP_EOL;
-    echo $aliGoodsParser->price.PHP_EOL;
-    echo $aliGoodsParser->name.PHP_EOL;
+    $goods->Price = $aliGoodsParser->price;
+    $goods->{'Product name'} = $aliGoodsParser->name;
+    // Description
+    // Short description
+    // Meta keywords
+    // Meta keywords
+    // Search words
+    // Page title
+    // SEO name
+
+    /*
+    echo "images: ".count($aliGoodsParser->images).PHP_EOL;
+    */
     
+    $goods->save();
+
+    echo $goods.PHP_EOL;
     
 
   }
 
-  private function isPrecent($uri) {
+  private function isPresent($uri) {
     $mongo = new MongoClient();
-    $collection = $mongo->{$this->config->mongo->db}->{$this->config->mongo->collection};
+    $config = PApplication::getConfig();
+    $collection = $mongo->{$config->mongo->db}->{$config->mongo->collection};
     $count = $collection->count(['Origin goods url'=> $uri]);
     return $count != 0;
   }
