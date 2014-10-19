@@ -1,7 +1,15 @@
 <?php
 
+/**
+ *  @package Alium
+ */
+
 require('lib/application.php');
 PApplication::init();
+
+/**
+ *  Импортер базы товаров в Алиум из интернет-магазина
+ */
 
 class AliImporter extends Cli {
 
@@ -10,6 +18,7 @@ class AliImporter extends Cli {
   public function __construct() {
     PFactory::load('AliGoodsParser');
     PFactory::load('MerchiumGoods');
+    require_once(PFactory::getDir().'extend/simple_html_dom/simple_html_dom.php');
   }
 
   public function run() {
@@ -17,7 +26,8 @@ class AliImporter extends Cli {
     if ($argc < 2) die($this->showMan());
 
     $configFile = $argv[1];
-    $this->loadConfig($configFile);
+    
+    PApplication::loadConfig($configFile);
 
     $uri = $argv[2];
 
@@ -28,6 +38,11 @@ class AliImporter extends Cli {
     $this->isPrecent($uri) and die("Uri already present: $uri".PHP_EOL);
 
     $aliGoodsParser = new AliGoodsParser();
+    $aliGoodsParser->getContent($uri);
+
+    echo $aliGoodsParser->images.PHP_EOL;
+    echo $aliGoodsParser->price.PHP_EOL;
+    echo $aliGoodsParser->name.PHP_EOL;
     
     
 

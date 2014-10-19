@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package Сore
+ *  @package Сore
  */
  
 /**
- * Фабрика объектов
+ *  Фабрика объектов
  */
 
 abstract class PFactory {
@@ -39,6 +39,8 @@ abstract class PFactory {
     require_once(self::$dir.'../../etc/config.php');
     require_once(self::$dir.'core/mysql.php');
     require_once(self::$dir.'core/cli.php');
+    require_once(self::$dir.'core/parser.php');
+    require_once(self::$dir.'core/goods.php');
     self::$config = new PConfig();
   }
   

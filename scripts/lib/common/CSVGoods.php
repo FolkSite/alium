@@ -1,41 +1,80 @@
 <?php
 
-class MerchiumGoodsParser implements Iterator, Countable {
+/**
+ *  @package Parser
+ */
+
+/**
+ *  Итерируемый набор товаров Goods
+ */
+
+class CSVGoods extends Parser implements Iterator, Countable {
   
-  private $position = 0, $fileName, $header = array(), $data = array(), $plugins = array(), $config;
+  private $position = 0, $fileName, $header = array(), $data = array();
   const DELIMITER = ';';
+
+  /**
+   *  Создание итерируемого набора товаров Goods из файла CSV
+   *  @param string $fileName путь к файлу
+   */
   
-  public function __construct($fileName, $config) {
+  public function __construct($fileName) {
     if(!file_exists($fileName)) throw new Exception("File $fileName not exists!");
-    $this->config = $config;
+    PFactory::load('GoodsFromArray');
     $this->fileName = $fileName;
     $this->sliceData();
+    $this->loadPlugins(PFactory::getDir().'plugins/fill.json');
   }
+
+  /**
+   *  @internal
+   */
   
-  public function count() { return count($this->data); } 
+  public function count() { return count($this->data); }
+
+  /**
+   *  @internal
+   */
   
   public function rewind() { $this->position = 0; }
+
+  /**
+   *  @internal
+   */
   
   public function key() { return $this->position; }
 
+  /**
+   *  @internal
+   */
+
   public function next() { ++$this->position; }
 
+  /**
+   *  @internal
+   */
+
   public function valid() { return isset($this->data[$this->position]); }
+
+  /**
+   *  @internal
+   */
   
-  public function current() { 
+  public function current() {
     $goodData = $this->header;
     $data = $this->data[$this->position];
     foreach($goodData as $keyName => $keyId) {
       $goodData[$keyName] = $data[$keyId];
     }
-    $merchiumGoods = new MerchiumGoods($this->config);
-    $merchiumGoods->setData($goodData)->prepareData($this->plugins);
-    return $merchiumGoods;
+    $goods = new GoodsFromArray($goodData);
+
+    $goods->prepareData($this->plugins);
+    return $goods;
   }
 
-  public function addPlugin(closure $plugin) {
-    $this->plugins[] = $plugin;
-  }
+  /**
+   *  @internal
+   */
   
   public function __toString() {
     $ret = '';
@@ -44,14 +83,26 @@ class MerchiumGoodsParser implements Iterator, Countable {
     }
     return $ret;
   }
+
+  /**
+   *  @internal
+   */
   
   private function getRawData() {
     return file($this->fileName);
   }
+
+  /**
+   *  @internal
+   */
   
   private function getHeader($rawData) {
     $this->header = array_flip(str_getcsv($rawData[0], self::DELIMITER));
-  }  
+  }
+
+  /**
+   *  @internal
+   */
   
   private function getData($rawData) {
     foreach(array_slice($rawData, 1) as $line) {
@@ -60,6 +111,10 @@ class MerchiumGoodsParser implements Iterator, Countable {
       $this->data[] = $data;
     }
   }
+
+  /**
+   *  @internal
+   */
   
   private function sliceData() {
     $rawData = $this->getRawData();

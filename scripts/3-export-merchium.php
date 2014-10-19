@@ -1,15 +1,22 @@
 <?php
 
+/**
+ *  @package Alium
+ */
+
 require('lib/application.php');
 PApplication::init();
+
+/**
+ *  Экспортет базы товаров в Мерчиум
+ */
 
 class GoodsExporter extends Cli {
 
   const MANUAL = 'Use {app} project.json';
 
   public function __construct() {
-    PFactory::load('AliGoodsParser');
-    PFactory::load('MerchiumGoods');
+    PFactory::load('GoodsFromMongo');
   }
 
   public function run() {
@@ -17,15 +24,16 @@ class GoodsExporter extends Cli {
     if ($argc < 2) die($this->showMan());
 
     $configFile = $argv[1];
-    $this->loadConfig($configFile);
+    
+    PApplication::loadConfig($configFile);
 
     $this->export();
   }
   
   public function export() {
-    
+    $config = PApplication::getConfig();
     $mongo = new MongoClient();
-    $collection = $mongo->{$this->config->mongo->db}->{$this->config->mongo->collection};
+    $collection = $mongo->{$config->mongo->db}->{$config->mongo->collection};
     
     $cursor = $collection->find();
 
@@ -34,17 +42,16 @@ class GoodsExporter extends Cli {
     $putHeader = true;
     foreach ($cursor as $doc) {
       
-      $merchiumGoods = new MerchiumGoods($this->config);
-      $merchiumGoods->loadGood((object)$doc);
+      $goods = new GoodsFromMongo((object)$doc);
 
       if($putHeader) {
         $putHeader = false;
-        fputcsv($outputBuffer, $merchiumGoods->getHeader());
+        fputcsv($outputBuffer, $goods->getHeader());
       }
       
       
 
-      fputcsv($outputBuffer, $merchiumGoods->getData());
+      fputcsv($outputBuffer, $goods->getData());
     }
 
     fclose($outputBuffer);

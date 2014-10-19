@@ -1,9 +1,11 @@
 {
-  "plugins": [
-    {
+  "plugins": {
+    "csv_prepare": [
+      {
       "name": "Обработка исходной ссылки",
       "file": "import/LinkFinder.php",
       "enabled": true
-    }
-  ]
+      }
+    ]
+  }
 }

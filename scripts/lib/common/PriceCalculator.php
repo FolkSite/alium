@@ -1,5 +1,13 @@
 <?php
 
+/**
+ *  @package Goods
+ */
+
+/**
+ *  Калькулятор цены
+ */
+
 class PriceCalculator {
   const MIN_RATION = 1.05;
 

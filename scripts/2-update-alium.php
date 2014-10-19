@@ -1,7 +1,15 @@
 <?php
 
+/**
+ *  @package Alium
+ */
+
 require('lib/application.php');
 PApplication::init();
+
+/**
+ *  Обновление цен и остатков
+ */
 
 class GoodsUpdater extends Cli {
 
@@ -9,7 +17,7 @@ class GoodsUpdater extends Cli {
 
   public function __construct() {
     PFactory::load('AliGoodsParser');
-    PFactory::load('MerchiumGoods');
+    PFactory::load('GoodsFromMongo');
   }
   
   public function run() {
@@ -17,31 +25,34 @@ class GoodsUpdater extends Cli {
     if ($argc < 2) die($this->showMan());
 
     $configFile = $argv[1];
-    $this->loadConfig($configFile);
+    
+    PApplication::loadConfig($configFile);
     
     $this->update();
   }
-    
+
   private function update() {
+    $config = PApplication::getConfig();
     $mongo = new MongoClient();
-    $collection = $mongo->{$this->config->mongo->db}->{$this->config->mongo->collection};
+    $collection = $mongo->{$config->mongo->db}->{$config->mongo->collection};
     
     $aliGoodsParser = new AliGoodsParser();
   
     $cursor = $collection->find();
+    $i = 0;
     foreach ($cursor as $doc) {
       
-      $merchiumGoods = new MerchiumGoods($this->config);
-      $merchiumGoods->loadGood((object)$doc);
-      
-      $aliGoodsParser->getContent($doc['Origin goods url']);
-      $data = $aliGoodsParser->parse();
+      $goods = new GoodsFromMongo((object)$doc);
 
-      $merchiumGoods->updatePrice($data->Price);
+      $aliGoodsParser->getContent($doc['Origin goods url']);
+
+      $goods->updatePrice($aliGoodsParser->price);
       
-      $merchiumGoods->save();
+      $goods->save();
+      $i++;
     }
     
+    echo "Goods updated: $i".PHP_EOL;
   }
 
 }

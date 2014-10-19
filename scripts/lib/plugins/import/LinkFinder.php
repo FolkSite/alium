@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * @package Plugins
+ */
+
 $plugin = function($goods){
       
   if (preg_match('~Ссылка:\sT\[(.*)\]~Ui', $goods->data['Features'], $mathes)) {

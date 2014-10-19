@@ -1,10 +1,11 @@
 <?php
+
 /**
- * @package Сore
+ *  @package Сore
  */
  
 /**
- * Работа с MySQL
+ *  Работа с MySQL
  */
 
 class DataBaseMysql {
