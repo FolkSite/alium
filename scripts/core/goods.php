@@ -14,6 +14,8 @@ abstract class Goods {
   protected $goods, $config;
   public function __construct() {
     $this->config = PApplication::getConfig();
+    $this->goods = new StdClass();
+    $this->goods->data = array();
   }
 
   public function __get($name) {
@@ -80,6 +82,13 @@ abstract class Goods {
   protected function prepareCommonFields() {
     $this->goods->id = $this->goods->data['Product id'];
     $this->goods->src = 'Ali';
+  }
+  
+  protected function applyShopPolicy($section) {
+    if(!isset($this->plugins[$section])) return;
+    foreach($this->plugins[$section] as $plugin) {
+      call_user_func($plugin, $this->goods);
+    }
   }
 
   private $priceCalculator;

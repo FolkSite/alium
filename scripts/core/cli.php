@@ -8,7 +8,7 @@
  *  Приложение командной строки
  */
 
-class Cli {
+abstract class Cli {
 
   protected function showMan() {
     die(static::MANUAL.PHP_EOL);

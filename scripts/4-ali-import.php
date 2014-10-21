@@ -4,7 +4,7 @@
  *  @package Alium
  */
 
-require('lib/application.php');
+require('core/application.php');
 PApplication::init();
 
 /**
@@ -18,7 +18,7 @@ class AliImporter extends Cli {
   public function __construct() {
     PFactory::load('AliGoodsParser');
     PFactory::load('GoodsFromShop');
-    require_once(PFactory::getDir().'extend/simple_html_dom/simple_html_dom.php');
+    require_once(PFactory::getDir().'classes/extend/simple_html_dom/simple_html_dom.php');
   }
 
   public function run() {
@@ -35,16 +35,22 @@ class AliImporter extends Cli {
   }
 
   private function import($uri) {
+    $config = PApplication::getConfig();
 
     $this->isPresent($uri) and die("Uri already present: $uri".PHP_EOL);
 
     $goods = new GoodsFromShop();
 
     $aliGoodsParser = new AliGoodsParser();
+    $aliGoodsParser->loadPluginsFromFile(PFactory::getDir().'plugins/ali.json', 'plugins');
     $aliGoodsParser->getContent($uri);
+    
 
-    $goods->Price = $aliGoodsParser->price;
-    $goods->{'Product name'} = $aliGoodsParser->name;
+    $goods->Price = $aliGoodsParser->Price;
+    $goods->{'Product name'} = $aliGoodsParser->{'Product name'};
+    
+    $goods->Weight = $aliGoodsParser->Weight; //pnl-packaging-weight
+    
     // Description
     // Short description
     // Meta keywords
@@ -57,7 +63,7 @@ class AliImporter extends Cli {
     echo "images: ".count($aliGoodsParser->images).PHP_EOL;
     */
     
-    $goods->save();
+    // $goods->save();
 
     echo $goods.PHP_EOL;
     

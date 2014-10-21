@@ -9,7 +9,7 @@ fi
 
 case "$CASE" in
   1)
-    php scripts/1-fill-alium.php projects/coolfashion.json data-test/csv/products_total_10082014.csv
+    php scripts/1-fetch-alium.php projects/coolfashion.json data-test/csv/products_total_10082014.csv
     ;;
   
   2)
@@ -17,7 +17,7 @@ case "$CASE" in
     ;;
   
   3)
-    php scripts/3-export-merchium.php projects/coolfashion.json
+    php scripts/3-pull-merchium.php projects/coolfashion.json
     ;;
   
   4)

@@ -7,7 +7,7 @@
  *  Парсер html интернет-магазина
  */
 
-class AliGoodsParser {
+class AliGoodsParser extends Parser {
 
   /**
    *  @internal
@@ -25,13 +25,23 @@ class AliGoodsParser {
   }
 
   public function __get($varName) {
-    if(isset($this->fields->{$varName})) return $this->fields->{$varName};
+    $value =& $this->fields->{$varName};
+    if(isset($value)) return $value;
+    $plugin =& $this->plugins['parsing'][$varName];
+    if (!isset($plugin)) throw new Exception("Can not parse $varName property. Add this plugin!");
+    $value = $plugin($this->data);
+    return $value;
+    
+    
     switch($varName) {
       case 'price':
         $this->fields->{$varName} = $this->parsePrice();
         break;
       case 'name':
         $this->fields->{$varName} = $this->parseName();
+        break;      
+      case 'weight':
+        $this->fields->{$varName} = $this->parseWeight();
         break;
       case 'images':
         $this->fields->{$varName} = $this->parseImages();
@@ -66,18 +76,6 @@ class AliGoodsParser {
       return (isset($item->skuVal->actSkuMultiCurrencyCalPrice)) ? $item->skuVal->actSkuMultiCurrencyCalPrice : null;
     }
     return null;
-  }
-  
-  private function parsePrice() {
-    if (preg_match('~var skuProducts=(\[\{.*\}\]);~Usi', $this->data, $matches)) {
-      $data = json_decode($matches[1]);
-      $item = $data[0]; // TODO other items
-      // Цена товара
-      return $item->skuVal->skuMultiCurrencyCalPrice;
-    } else {
-      throw new Exception("Can not parse price");
-    }
-    return $ret;
   }
   
 

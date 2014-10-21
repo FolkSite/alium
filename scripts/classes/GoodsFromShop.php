@@ -15,22 +15,13 @@ class GoodsFromShop extends Goods {
 
     $plugins =& $this->config->shopPolicy->plugins;
     if(!isset($plugins) || !is_object($plugins)) throw new Exception("Shop policy plugins not found");
-
     $this->loadPlugins(PFactory::getDir().'plugins/', $plugins);
+    $this->applyShopPolicy('before_parse');
   }
 
   public function save() {
-    $this->applyShopPolicy();
+    $this->applyShopPolicy('after_parse');
     // parent::save();
   }
-
-  private function applyShopPolicy() {
-    foreach($this->plugins['before_save'] as $plugin) {
-      call_user_func($plugin, $this->goods);
-    }
-  }
-
-
-
 
 }

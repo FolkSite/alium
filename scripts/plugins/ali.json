@@ -1,0 +1,21 @@
+{
+  "plugins": {
+    "parsing": [
+      {
+      "name": "Price",
+      "file": "ali/price.php",
+      "enabled": true
+      },
+      {
+      "name": "Weight",
+      "file": "ali/weight.php",
+      "enabled": true
+      },
+      {
+      "name": "Product name",
+      "file": "ali/name.php",
+      "enabled": true
+      }
+    ]
+  }
+}

@@ -18,7 +18,7 @@ class PApplication {
 
   public static function init() 
   {
-    require('core/factory.php');
+    require('factory.php');
     PFactory::init();
   }
 

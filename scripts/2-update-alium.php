@@ -4,7 +4,7 @@
  *  @package Alium
  */
 
-require('lib/application.php');
+require('core/application.php');
 PApplication::init();
 
 /**

@@ -14,7 +14,6 @@ $plugin = function($goods) {
   $data['List price'] = 0;
   $data['Status'] = 'A'; // Включен
   $data['Quantity'] = 100; // Количество товара на складе
-  // $data['Weight'] = '';
   $data['Min quantity'] = 0;
   $data['Shipping freight'] = 0;
   $data['Date added'] = $date->format('d M Y H:i:s');

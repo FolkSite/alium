@@ -45,9 +45,9 @@ trait Plugin {
   public function loadPlugins($dir, $_allPlugins) {
     $allPlugins = (array)$_allPlugins;
     if(count($allPlugins) > 0) foreach($allPlugins as $section => $plugins) {
-      if(count($plugins) > 0) foreach($plugins as $plugin) {
-        require(PFactory::getDir()."plugins/{$plugin->file}");
-        $this->addPlugin($section, $plugin);
+      if(count($plugins) > 0) foreach($plugins as $pluginObj) {
+        require(PFactory::getDir()."plugins/{$pluginObj->file}");
+        $this->addPlugin($section, $pluginObj->name, $plugin);
       }
     }
   }
@@ -58,8 +58,9 @@ trait Plugin {
    * @param callable $plugin замыкание
    */
 
-  public function addPlugin($section, closure $plugin) {
-    $this->plugins[$section][] = $plugin;
+  public function addPlugin($section, $pluginName, closure $plugin) {
+    if (isset($this->plugins[$section][$pluginName])) throw new Exception("Duplicate plugin name `$pluginName` in section `$section`");
+    $this->plugins[$section][$pluginName] = $plugin;
     return $this;
   }
 }

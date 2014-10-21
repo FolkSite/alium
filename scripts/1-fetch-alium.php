@@ -4,14 +4,14 @@
  *  @package Alium
  */
 
-require('lib/application.php');
+require('core/application.php');
 PApplication::init();
 
 /**
  *  Обновление базы товаров из выгрузки Мерчиума
  */
 
-class GoodsFiller extends Cli {
+class GoodsFetcher extends Cli {
 
   const MANUAL = 'Use {app} project.json file.csv';
 
@@ -28,10 +28,10 @@ class GoodsFiller extends Cli {
 
     PApplication::loadConfig($configFile);
     
-    $this->fill($dataFile);
+    $this->fetch($dataFile);
   }
   
-  private function fill($fileName) {
+  private function fetch($fileName) {
 
     $goodsFile = new CSVGoods($fileName);
     
@@ -47,5 +47,5 @@ class GoodsFiller extends Cli {
 
 }
 
-$goodsFiller = new GoodsFiller();
-$goodsFiller->run();
+$goodsFetcher = new GoodsFetcher();
+$goodsFetcher->run();

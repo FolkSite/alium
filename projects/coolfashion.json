@@ -12,10 +12,11 @@
   },
   "shopPolicy": {
     "plugins": {
-      "before_save": [
+      "before_parse": [
         {
-          "name": "Минимальный набор для функционирования Мерчиума",
-          "file": "add/common.php",
+          "name": "common",
+          "desc": "Минимальный набор для функционирования Мерчиума",
+          "file": "import/common.php",
           "enabled": true
         }
       ]

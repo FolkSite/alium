@@ -4,14 +4,14 @@
  *  @package Alium
  */
 
-require('lib/application.php');
+require('core/application.php');
 PApplication::init();
 
 /**
  *  Экспортет базы товаров в Мерчиум
  */
 
-class GoodsExporter extends Cli {
+class GoodsPuller extends Cli {
 
   const MANUAL = 'Use {app} project.json';
 
@@ -27,10 +27,10 @@ class GoodsExporter extends Cli {
     
     PApplication::loadConfig($configFile);
 
-    $this->export();
+    $this->pull();
   }
   
-  public function export() {
+  public function pull() {
     $config = PApplication::getConfig();
     $mongo = new MongoClient();
     $collection = $mongo->{$config->mongo->db}->{$config->mongo->collection};
@@ -59,5 +59,5 @@ class GoodsExporter extends Cli {
   }
 }
 
-$goodsExporter = new GoodsExporter();
-$goodsExporter->run();
+$goodsPuller = new GoodsPuller();
+$goodsPuller->run();

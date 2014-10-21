@@ -36,8 +36,7 @@ class GoodMerchium extends Cli {
     $cursor = $collection->find(array('id' => $productId));
     
     foreach ($cursor as $doc) {
-      $goods = new GoodsFromMongo((object)$doc);
-      echo $goods->{'Shipping freight'}.PHP_EOL;
+      echo var_dump($doc);
       break;
     }
   }

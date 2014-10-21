@@ -22,7 +22,7 @@ abstract class PFactory {
     $baseClassNames = (array)$_baseClassName;
     foreach($baseClassNames as $baseClassName)
     {
-      require_once(self::$dir."common/$baseClassName.php");
+      require_once(self::$dir."classes/$baseClassName.php");
     }
     return true;
   }
@@ -35,8 +35,8 @@ abstract class PFactory {
   private static $dir, $config;
   public static function init()
   {
-    self::$dir = dirname(__FILE__).'/../';
-    require_once(self::$dir.'../../etc/config.php');
+    self::$dir = realpath(__DIR__.'/..').'/';
+    require_once(self::$dir.'../etc/config.php');
     require_once(self::$dir.'core/plugin.php');
     require_once(self::$dir.'core/mysql.php');
     require_once(self::$dir.'core/cli.php');
@@ -93,4 +93,3 @@ abstract class PFactory {
   } 
   
 }
-
