@@ -37,6 +37,7 @@ class GoodsUpdater extends Cli {
     $collection = $mongo->{$config->mongo->db}->{$config->mongo->collection};
     
     $aliGoodsParser = new AliGoodsParser();
+    $aliGoodsParser->loadPluginsFromFile(PFactory::getDir().'plugins/ali.json', 'plugins');
   
     $cursor = $collection->find();
     $i = 0;
@@ -46,7 +47,8 @@ class GoodsUpdater extends Cli {
 
       $aliGoodsParser->getContent($doc['Origin goods url']);
 
-      $goods->updatePrice($aliGoodsParser->price);
+
+      $goods->updatePrice($aliGoodsParser->Price);
       
       $goods->save();
       $i++;

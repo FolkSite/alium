@@ -19,7 +19,7 @@ class CSVGoods extends Parser implements Iterator, Countable {
    */
   
   public function __construct($fileName) {
-    if(!file_exists($fileName)) throw new Exception("File $fileName not exists!");
+    if(!file_exists($fileName)) throw new Exception("File `$fileName` not exists!");
     PFactory::load('GoodsFromArray');
     $this->fileName = $fileName;
     $this->sliceData();
@@ -107,7 +107,7 @@ class CSVGoods extends Parser implements Iterator, Countable {
   private function getData($rawData) {
     foreach(array_slice($rawData, 1) as $line) {
       $data = str_getcsv($line, self::DELIMITER);
-      if(count($data) != count($this->header)) throw new Exception("Wrong file format in $fileName!");
+      if(count($data) != count($this->header)) throw new Exception("Wrong file format in `$fileName`!");
       $this->data[] = $data;
     }
   }
@@ -118,7 +118,7 @@ class CSVGoods extends Parser implements Iterator, Countable {
   
   private function sliceData() {
     $rawData = $this->getRawData();
-    if(count($rawData) < 2) throw new Exception("Wrong file format in $fileName!");
+    if(count($rawData) < 2) throw new Exception("Wrong file format in `$fileName`!");
     $this->getHeader($rawData);
     $this->getData($rawData);
   }

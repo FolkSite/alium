@@ -18,6 +18,7 @@ class AliImporter extends Cli {
   public function __construct() {
     PFactory::load('AliGoodsParser');
     PFactory::load('GoodsFromShop');
+    PFactory::load('SeoModule');
     require_once(PFactory::getDir().'classes/extend/simple_html_dom/simple_html_dom.php');
   }
 
@@ -35,37 +36,34 @@ class AliImporter extends Cli {
   }
 
   private function import($uri) {
+
     $config = PApplication::getConfig();
 
     $this->isPresent($uri) and die("Uri already present: $uri".PHP_EOL);
 
-    $goods = new GoodsFromShop();
+    $goods = new GoodsFromShop($uri);
 
     $aliGoodsParser = new AliGoodsParser();
     $aliGoodsParser->loadPluginsFromFile(PFactory::getDir().'plugins/ali.json', 'plugins');
     $aliGoodsParser->getContent($uri);
-    
 
-    $goods->Price = $aliGoodsParser->Price;
+    $seoModule = new SeoModule();
+    $seoModule->loadPluginsFromFile(PFactory::getDir().'plugins/seo.json', 'plugins');
+
+    
     $goods->{'Product name'} = $aliGoodsParser->{'Product name'};
-    
-    $goods->Weight = $aliGoodsParser->Weight; //pnl-packaging-weight
-    
-    // Description
-    // Short description
-    // Meta keywords
-    // Meta keywords
-    // Search words
-    // Page title
-    // SEO name
+    $goods->{'Product code'} = $aliGoodsParser->{'Product code'};
+    $goods->Price = $aliGoodsParser->Price;
+    $goods->Weight = $aliGoodsParser->Weight;
+    $images = $aliGoodsParser->{'Images'};
+    $goods->{'Detailed image'} = $images[0];
 
-    /*
-    echo "images: ".count($aliGoodsParser->images).PHP_EOL;
-    */
+    $seoModule->setText($aliGoodsParser->{'Product name'});
+    $goods->{'Meta keywords'} = $seoModule->{'Meta keywords'};
     
-    // $goods->save();
+    $goods->save();
 
-    echo $goods.PHP_EOL;
+    // echo $goods.PHP_EOL;
     
 
   }

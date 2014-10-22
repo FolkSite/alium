@@ -12,6 +12,7 @@
 ====================
 
 PHP 5.4+ (из-за trait)
+php: shmop расширение, см. вывод php –m | grep shmop (или инициировать phpmorphy как PHPMORPHY_STORAGE_MEM)
 MongoDB 2+
 (MySQL 5.2+)
 

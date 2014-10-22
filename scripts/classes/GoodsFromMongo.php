@@ -12,9 +12,9 @@ class GoodsFromMongo extends Goods {
 
   public function __construct($goodsData) {
       parent::__construct();
-      
       $this->goods = $goodsData;
       unset($this->goods->_id);
+      $this->goods->data['Product id'] = (int)$this->goods->data['Product id'];
   }
 
 }

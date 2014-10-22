@@ -1,0 +1,11 @@
+{
+  "plugins": {
+    "parsing": [
+      {
+        "name": "Meta keywords",
+        "file": "seo/keywords.php",
+        "enabled": true
+      }
+    ]
+  }
+}

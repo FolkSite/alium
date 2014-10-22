@@ -11,6 +11,8 @@
     "sweet": true
   },
   "shopPolicy": {
+    "category": "Тестовая категория",
+    "taxes": "",
     "plugins": {
       "before_parse": [
         {

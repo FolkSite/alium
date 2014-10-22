@@ -29,6 +29,10 @@ abstract class Goods {
     $this->goods->data[$name] = $value;
   }
 
+  public function setProp($name, $value) {
+    $this->goods->$name = $value;
+  }
+
   public function __toString() {
     $ret = '';
     foreach($this->goods->data as $key => $_val) {
@@ -79,8 +83,15 @@ abstract class Goods {
     return $ret;
   }
 
+  public function isAllFields() {
+    foreach(self::$fields as $field) {
+      if (!isset($this->goods->data[$field])) return false;
+    }
+    return true;
+  }
+
   protected function prepareCommonFields() {
-    $this->goods->id = $this->goods->data['Product id'];
+    $this->goods->id = (int)$this->goods->data['Product id'];
     $this->goods->src = 'Ali';
   }
   

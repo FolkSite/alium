@@ -10,11 +10,12 @@
 
 class GoodsFromArray extends Goods {
 
-  public function __construct($goodsData) {
+  public function __construct(array $goodsData) {
     parent::__construct();
     
     $this->goods = new StdClass();
     $this->goods->data = $goodsData;
+    $this->goods->data['Product id'] = (int)$this->goods->data['Product id'];
     $this->prepareCommonFields();
   }
   
