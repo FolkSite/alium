@@ -68,6 +68,8 @@ class AliImporter extends Cli {
         break;
       default:
         $goods->save();
+        $logger = PFactory::getLogger();
+        $logger->log(Code::INFO_ACTION_IMPORT, "Goods imported: 1");
         echo 'Done'.PHP_EOL;
     }
 

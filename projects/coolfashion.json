@@ -5,6 +5,12 @@
     "db": "alium",
     "collection": "coolfashion"
   },
+  "mysql": {
+    "host": "localhost",
+    "password": "Nerryad3",
+    "user": "vds",
+    "db": "dev_alium"
+  },
   "price": {
     "closure": "$closure = function($price) { return $price * 1.21; };",
     "round": true,

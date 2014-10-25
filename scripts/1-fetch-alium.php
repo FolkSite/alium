@@ -32,7 +32,7 @@ class GoodsFetcher extends Cli {
   }
   
   private function fetch($fileName) {
-
+    $logger = PFactory::getLogger();
     $goodsFile = new CSVGoods($fileName);
     
     $i = 0;
@@ -40,7 +40,9 @@ class GoodsFetcher extends Cli {
       $goods->save();
       $i++;
     }
-    echo "Goods processed: $i".PHP_EOL;
+    $logger->log(Code::INFO_ACTION_FETCH, "Goods fetched: $i");
+
+    echo "Goods fetched: $i".PHP_EOL;
 
   }
 

@@ -34,25 +34,33 @@ class GoodsPuller extends Cli {
     $config = PApplication::getConfig();
     $mongo = new MongoClient();
     $collection = $mongo->{$config->mongo->db}->{$config->mongo->collection};
+
+    $logger = PFactory::getLogger();
     
     $cursor = $collection->find();
 
     $outputBuffer = fopen("php://output", 'w');
 
     $putHeader = true;
+    $i = 0;
+    $isPrice = $option == 'price';
+
     foreach ($cursor as $doc) {
+      $i++;
       
       $goods = Goods::getInstance((object)$doc);
 
       if($putHeader) {
         $putHeader = false;
-        fputcsv($outputBuffer, $option == 'price' ? $goods->getHeaderPrice() : $goods->getHeader());
+        fputcsv($outputBuffer, $isPrice ? $goods->getHeaderPrice() : $goods->getHeader());
       }
       
-      fputcsv($outputBuffer, $option == 'price' ? $goods->getDataPrice() : $goods->getData());
+      fputcsv($outputBuffer, $isPrice ? $goods->getDataPrice() : $goods->getData());
     }
 
     fclose($outputBuffer);
+
+    $logger->log(Code::INFO_ACTION_PULL, "Goods pulled: $i".($isPrice ? ' (price)' : null));
     
   }
 }

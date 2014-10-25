@@ -32,17 +32,17 @@ abstract class PFactory {
    *
    */
    
-  private static $dir, $config;
+  private static $dir;
   public static function init()
   {
     self::$dir = realpath(__DIR__.'/..').'/';
-    require_once(self::$dir.'../etc/config.php');
     require_once(self::$dir.'core/plugin.php');
     require_once(self::$dir.'core/mysql.php');
     require_once(self::$dir.'core/cli.php');
     require_once(self::$dir.'core/parser.php');
     require_once(self::$dir.'core/goods.php');
-    self::$config = new PConfig();
+    require_once(self::$dir.'core/logger.php');
+    require_once(self::$dir.'core/code.php');
   }
   
   /**
@@ -65,11 +65,19 @@ abstract class PFactory {
 	{
 		if (!self::$database)
 		{
-			self::$database = new DataBaseMysql(self::$config);
+			self::$database = new DataBaseMysql(PApplication::getConfig()->mysql);
 		}
 
 		return self::$database;
 	}
+
+  private static $logger;
+  public function getLogger() {
+    if(!isset(self::$logger)) {
+      self::$logger = new Logger(PApplication::getConfig()->name);
+    }
+    return self::$logger;
+  }
   
   /**
    * Set global option

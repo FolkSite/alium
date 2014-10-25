@@ -12,6 +12,6 @@ $plugin = function($html){
       // Цена товара
       return $item->skuVal->skuMultiCurrencyCalPrice;
     } else {
-      throw new Exception("Can not parse Price");
+      throw new Exception("Can not parse Price", Code::ERR_CAN_NOT_PARSE_PRICE);
     }
 };
