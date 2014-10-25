@@ -20,10 +20,8 @@ class CSVGoods extends Parser implements Iterator, Countable {
   
   public function __construct($fileName) {
     if(!file_exists($fileName)) throw new Exception("File `$fileName` not exists!");
-    PFactory::load('GoodsFromArray');
     $this->fileName = $fileName;
     $this->sliceData();
-    $this->loadPluginsFromFile(PFactory::getDir().'plugins/fetch.json', 'plugins');
   }
 
   /**
@@ -66,9 +64,7 @@ class CSVGoods extends Parser implements Iterator, Countable {
     foreach($goodData as $keyName => $keyId) {
       $goodData[$keyName] = $data[$keyId];
     }
-    $goods = new GoodsFromArray($goodData);
-
-    $goods->prepareData($this->plugins);
+    $goods = Goods::getInstance($goodData);
     return $goods;
   }
 

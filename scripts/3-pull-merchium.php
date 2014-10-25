@@ -13,10 +13,9 @@ PApplication::init();
 
 class GoodsPuller extends Cli {
 
-  const MANUAL = 'Use {app} project.json';
+  const MANUAL = 'Use {app} project.json (option=[price])';
 
   public function __construct() {
-    PFactory::load('GoodsFromMongo');
   }
 
   public function run() {
@@ -24,13 +23,14 @@ class GoodsPuller extends Cli {
     if ($argc < 2) die($this->showMan());
 
     $configFile = $argv[1];
+    $option = isset($argv[2]) ? $argv[2] : null;
     
     PApplication::loadConfig($configFile);
 
-    $this->pull();
+    $this->pull($option);
   }
   
-  public function pull() {
+  public function pull($option) {
     $config = PApplication::getConfig();
     $mongo = new MongoClient();
     $collection = $mongo->{$config->mongo->db}->{$config->mongo->collection};
@@ -42,16 +42,14 @@ class GoodsPuller extends Cli {
     $putHeader = true;
     foreach ($cursor as $doc) {
       
-      $goods = new GoodsFromMongo((object)$doc);
+      $goods = Goods::getInstance((object)$doc);
 
       if($putHeader) {
         $putHeader = false;
-        fputcsv($outputBuffer, $goods->getHeader());
+        fputcsv($outputBuffer, $option == 'price' ? $goods->getHeaderPrice() : $goods->getHeader());
       }
       
-      
-
-      fputcsv($outputBuffer, $goods->getData());
+      fputcsv($outputBuffer, $option == 'price' ? $goods->getDataPrice() : $goods->getData());
     }
 
     fclose($outputBuffer);

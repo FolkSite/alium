@@ -13,11 +13,10 @@ PApplication::init();
 
 class AliImporter extends Cli {
 
-  const MANUAL = 'Use {app} project.json uri';
+  const MANUAL = 'Use {app} project.json uri (option=[sandbox])';
 
   public function __construct() {
     PFactory::load('AliGoodsParser');
-    PFactory::load('GoodsFromShop');
     PFactory::load('SeoModule');
     require_once(PFactory::getDir().'classes/extend/simple_html_dom/simple_html_dom.php');
   }
@@ -31,17 +30,19 @@ class AliImporter extends Cli {
     PApplication::loadConfig($configFile);
 
     $uri = $argv[2];
+    $option = isset($argv[3]) ? $argv[3] : null;
 
-    $this->import($uri);
+    $this->import($uri, $option);
   }
 
-  private function import($uri) {
+  private function import($uri, $option) {
 
     $config = PApplication::getConfig();
 
-    $this->isPresent($uri) and die("Uri already present: $uri".PHP_EOL);
+    $option != 'sandbox' && $this->isPresent($uri) && die("Uri already present: $uri".PHP_EOL);
 
-    $goods = new GoodsFromShop($uri);
+    $goods = Goods::getInstance(array());
+    $goods->setProp('Origin goods url', $uri);
 
     $aliGoodsParser = new AliGoodsParser();
     $aliGoodsParser->loadPluginsFromFile(PFactory::getDir().'plugins/ali.json', 'plugins');
@@ -53,17 +54,23 @@ class AliImporter extends Cli {
     
     $goods->{'Product name'} = $aliGoodsParser->{'Product name'};
     $goods->{'Product code'} = $aliGoodsParser->{'Product code'};
-    $goods->Price = $aliGoodsParser->Price;
+    $goods->updatePrice($aliGoodsParser->Price);
     $goods->Weight = $aliGoodsParser->Weight;
     $images = $aliGoodsParser->{'Images'};
     $goods->{'Detailed image'} = $images[0];
 
     $seoModule->setText($aliGoodsParser->{'Product name'});
     $goods->{'Meta keywords'} = $seoModule->{'Meta keywords'};
-    
-    $goods->save();
 
-    // echo $goods.PHP_EOL;
+    switch($option) {
+      case 'sandbox':
+        echo $goods.PHP_EOL;
+        break;
+      default:
+        $goods->save();
+        echo 'Done'.PHP_EOL;
+    }
+
     
 
   }

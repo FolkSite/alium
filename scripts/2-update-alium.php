@@ -17,7 +17,6 @@ class GoodsUpdater extends Cli {
 
   public function __construct() {
     PFactory::load('AliGoodsParser');
-    PFactory::load('GoodsFromMongo');
   }
   
   public function run() {
@@ -43,13 +42,16 @@ class GoodsUpdater extends Cli {
     $i = 0;
     foreach ($cursor as $doc) {
       
-      $goods = new GoodsFromMongo((object)$doc);
-
-      $aliGoodsParser->getContent($doc['Origin goods url']);
-
-
-      $goods->updatePrice($aliGoodsParser->Price);
+      try {
+        if(!isset($doc['Origin goods url'])) throw new Exception("Origin goods url not set!");
+        $aliGoodsParser->getContent($doc['Origin goods url']);
+      } catch (Exception $e) {
+        continue;
+      }
       
+      $goods = Goods::getInstance((object)$doc);
+      $goods->updatePrice($aliGoodsParser->Price);
+      $goods->setProp('Last update', new MongoDate());
       $goods->save();
       $i++;
     }

@@ -11,26 +11,69 @@
 abstract class Goods {
   use Plugin;
   
-  protected $goods, $config;
-  public function __construct() {
+  private $goods, $config;
+  public function __construct($goods = null) {
+    if(!isset($goods)) {
+      $this->goods = new StdClass();
+      $this->goods->data = array();
+    } else {
+      $this->goods = $goods;
+      unset($this->goods->_id);
+    }
     $this->config = PApplication::getConfig();
-    $this->goods = new StdClass();
-    $this->goods->data = array();
+  }
+
+  public function getInstance($goodsData) {
+    switch(gettype($goodsData)) {
+      case 'array':
+        PFactory::load('NewGoods');
+        return new NewGoods($goodsData);
+      case 'object':
+        PFactory::load('ExistsGoods');
+        return new ExistsGoods($goodsData);
+      default:
+        throw new Exception("No such type of instance");
+    }
   }
 
   public function __get($name) {
-    $isPropertyPresent = isset($this->goods->data[$name]);
-    if ($isPropertyPresent) return $this->goods->data[$name];
-    return null;
+    switch($name) {
+      case 'Product id':
+        return (int)$this->goods->data['Product id'];
+      default:
+        return isset($this->goods->data[$name]) ? $this->goods->data[$name] : null;
+    }
   }
 
   public function __set($name, $value) {
-    $isPropertyPresent = isset($this->goods->data[$name]);
-    $this->goods->data[$name] = $value;
+    switch($name) {
+      case 'Product id':
+        $this->goods->data['Product id'] = (int)$value;
+        $this->goods->id = (int)$value;
+        break;
+      default:
+        $this->goods->data[$name] = $value;
+    }
   }
 
   public function setProp($name, $value) {
-    $this->goods->$name = $value;
+    switch($name) {
+      case 'id':
+        $this->goods->data['Product id'] = (int)$value;
+        $this->goods->id = (int)$value;
+        break;
+      default:
+        $this->goods->$name = $value;
+    }
+  }
+
+  public function getProp($name) {
+    switch($name) {
+      case 'id':
+        return (int)$this->goods->data['Product id'];
+      default:
+        return isset($this->goods->$name) ? $this->goods->$name : null;
+    }
   }
 
   public function __toString() {
@@ -42,14 +85,17 @@ abstract class Goods {
     return $ret;
   }
 
+  public function _() {
+    echo var_dump($this->goods);
+  }
+
   /**
    *  Сохранение может быть переопределено в дочерних классах!
    */
 
   public function save() {
-    $mongo = new MongoClient();
-    $collection = $mongo->{$this->config->mongo->db}->{$this->config->mongo->collection};
-    $collection->update(array('id' => $this->goods->data['Product id']), array('$set' => $this->goods), array('upsert'=>true));
+    $collection = $this->getCollection();
+    $collection->update(array('id' => $this->getProp('id')), array('$set' => $this->goods), array('upsert'=>true));
   }
 
   public function updatePrice($newOriginPrice) {
@@ -83,23 +129,28 @@ abstract class Goods {
     return $ret;
   }
 
-  public function isAllFields() {
-    foreach(self::$fields as $field) {
-      if (!isset($this->goods->data[$field])) return false;
-    }
-    return true;
+  private static $priceFields = array('Product code', 'Language', 'Product id', 'Price', 'Status');
+
+  public function getHeaderPrice() {
+    return self::$priceFields;
   }
 
-  protected function prepareCommonFields() {
-    $this->goods->id = (int)$this->goods->data['Product id'];
-    $this->goods->src = 'Ali';
+  public function getDataPrice() {
+    $ret = array();
+    foreach(self::$priceFields as $field) $ret[$field] = isset($this->goods->data[$field]) ? $this->goods->data[$field] : '';
+    return $ret;
   }
-  
-  protected function applyShopPolicy($section) {
-    if(!isset($this->plugins[$section])) return;
-    foreach($this->plugins[$section] as $plugin) {
-      call_user_func($plugin, $this->goods);
-    }
+
+  protected function getConfig() {
+    return $this->config;
+  }
+
+  private static $collection;
+  protected function getCollection() {
+    if(isset(self::$collection)) return self::$collection;
+    $mongo = new MongoClient();
+    self::$collection = $mongo->{$this->config->mongo->db}->{$this->config->mongo->collection};
+    return self::$collection;
   }
 
   private $priceCalculator;

@@ -13,15 +13,8 @@
   "shopPolicy": {
     "category": "Тестовая категория",
     "taxes": "",
-    "plugins": {
-      "before_parse": [
-        {
-          "name": "common",
-          "desc": "Минимальный набор для функционирования Мерчиума",
-          "file": "import/common.php",
-          "enabled": true
-        }
-      ]
+    "skuPrefixes": {
+      "aliexpress": "cfa-"
     }
   }
 }

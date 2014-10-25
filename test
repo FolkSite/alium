@@ -24,6 +24,10 @@ case "$CASE" in
     php scripts/4-ali-import.php projects/coolfashion.json data-test/ali-localpages/watch.html 
     ;;
 
+  5)
+    php scripts/4-ali-import.php projects/coolfashion.json data-test/ali-localpages/watch.html sandbox
+    ;;
+
   *)
     echo No such case: "$CASE"
     exit 1
