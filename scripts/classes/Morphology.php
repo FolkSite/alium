@@ -13,7 +13,7 @@ class Morphology {
       // PHPMORPHY_STORAGE_FILE - use file operations(fread, fseek) for dictionary access, this is very slow...
       // PHPMORPHY_STORAGE_SHM - load dictionary in shared memory(using shmop php extension), this is preferred mode
       // PHPMORPHY_STORAGE_MEM - load dict to memory each time when phpMorphy intialized, this useful when shmop ext. not activated. Speed same as for PHPMORPHY_STORAGE_SHM type
-      'storage' => PHPMORPHY_STORAGE_SHM,
+      'storage' => PHPMORPHY_STORAGE_MEM,
       // Enable prediction by suffix
       'predict_by_suffix' => true, 
       // Enable prediction by prefix

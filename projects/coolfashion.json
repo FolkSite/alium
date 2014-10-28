@@ -12,7 +12,7 @@
     "db": "dev_alium"
   },
   "price": {
-    "closure": "$closure = function($price) { return $price * 1.21; };",
+    "closure": "$closure = function($price) { switch(true) { case $price < 100:return $price * 2.5; case $price < 1000: return $price * 1.6; default: return $price * 1.4; }};",
     "round": true,
     "sweet": true
   },

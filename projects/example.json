@@ -1,12 +1,26 @@
 {
-  "name": "Project name",
-  "uri": "project.uri.com",
+  "name": "Shop name",
+  "uri": "myshop.ru",
   "mongo": {
-    "dbname": "mongo_db_name"
+    "db": "alium",
+    "collection": "myshop"
+  },
+  "mysql": {
+    "host": "localhost",
+    "password": "pass",
+    "user": "user",
+    "db": "my_db"
   },
   "price": {
-    "closure": "$closure = function($price) { return $price * 1.5; };",
+    "closure": "$closure = function($price) { return $price * 1.21; };",
     "round": true,
     "sweet": true
+  },
+  "shopPolicy": {
+    "category": "Тестовая категория",
+    "taxes": "",
+    "skuPrefixes": {
+      "aliexpress": "cfa-"
+    }
   }
 }
