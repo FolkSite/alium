@@ -65,6 +65,7 @@ class CSVGoods extends Parser implements Iterator, Countable {
       $goodData[$keyName] = $data[$keyId];
     }
     $goods = Goods::getInstance($goodData);
+    $goods->setProp('Fetched', new MongoDate());
     return $goods;
   }
 

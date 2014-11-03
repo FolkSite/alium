@@ -57,7 +57,13 @@ class AliImporter extends Cli {
     $goods->updatePrice($aliGoodsParser->Price);
     $goods->Weight = $aliGoodsParser->Weight;
     $images = $aliGoodsParser->{'Images'};
-    $goods->{'Detailed image'} = $images[0];
+    if(count($images) > 0) {
+      $goods->{'Detailed image'} = $images[0];
+      unset($images[0]);
+      if(count($images) > 0) {
+        $goods->setProp('Images', $images);
+      }
+    }
 
     $seoModule->setText($aliGoodsParser->{'Product name'});
     $goods->{'Meta keywords'} = $seoModule->{'Meta keywords'};
